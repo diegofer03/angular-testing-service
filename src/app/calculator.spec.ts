@@ -1,6 +1,6 @@
 import { Calculator } from "./calculator";
 
-fdescribe('Testing calculator', () => {
+describe('Testing calculator', () => {
   it('get 9 in multipling', ()=>{
     //arrange
     const calculator = new Calculator()
