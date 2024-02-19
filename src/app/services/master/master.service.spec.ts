@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MasterService } from './master.service';
-import { ValueService } from './value.service';
+import { ValueService } from '../value/value.service';
 
 fdescribe('MasterService', () => {
   let service: MasterService;
