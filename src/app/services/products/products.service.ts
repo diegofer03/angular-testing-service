@@ -25,7 +25,7 @@ export class ProductsService {
   }
 
   getAllSimple(){
-    return this.http.get<Product[]>(`${this.apiUrl}/prodcuts`)
+    return this.http.get<Product[]>(`${this.apiUrl}/products`)
   }
 
   getAll(limit?: number, offset?: number) {
