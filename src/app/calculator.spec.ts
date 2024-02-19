@@ -1,6 +1,11 @@
+import { TestBed } from "@angular/core/testing";
 import { Calculator } from "./calculator";
 
 describe('Testing calculator', () => {
+
+  beforeEach(()=>{
+
+  })
   it('get 9 in multipling', ()=>{
     //arrange
     const calculator = new Calculator()
