@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ProductsService } from './products.service';
-import { CreateProductDTO, Product } from './../../models/app.models';
+import { CreateProductDTO, Product, UpdateProductDTO } from './../../models/app.models';
 import { environment } from 'src/environments/environment.development';
 import { generateManyProducts, generateOneProduct } from 'src/app/models/app.mocks';
 
@@ -104,12 +104,31 @@ fdescribe('ProductsService', () => {
         categoryId: 12
       }
       service.create({...dto}).subscribe((data) => {
-        expect(data).toBe(mockData)
+        expect(data).toEqual(mockData)
         doneFn()
       })
       const req = httpController.expectOne(`${url}/products`)
       req.flush(mockData)
       expect(req.request.method).toBe('POST')
+      expect(req.request.body).toEqual(dto)
+    })
+  })
+
+  describe('Put product', () => {
+    it('Should modify product', (doneFn) => {
+      const mockData = generateOneProduct()
+      const dto : UpdateProductDTO = {
+        title : 'prueba'
+      }
+      const id = '1'
+      service.update(id, {...dto}).subscribe((data) => {
+        expect(data).toEqual(mockData)
+        console.log(data)
+        doneFn()
+      })
+      const req = httpController.expectOne(`${url}/products/${id}`)
+      req.flush(mockData)
+      expect(req.request.method).toBe('PUT')
       expect(req.request.body).toBe(dto)
     })
   })
