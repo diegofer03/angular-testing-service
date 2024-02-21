@@ -4,6 +4,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDTO, Product, UpdateProductDTO } from './../../models/app.models';
 import { environment } from 'src/environments/environment.development';
 import { generateManyProducts, generateOneProduct } from 'src/app/models/app.mocks';
+import { HttpStatusCode } from '@angular/common/http';
 
 fdescribe('ProductsService', () => {
   let service: ProductsService;
@@ -90,6 +91,102 @@ fdescribe('ProductsService', () => {
       const params = req.request.params
       expect(params.get('limit')).toBe(limit+'')
       expect(params.get('offset')).toBe(`${offset}`)
+    })
+  })
+
+  describe('getOneProduct',() => {
+    it('Should get one product', (doneFn) => {
+      const mockData: Product = generateOneProduct()
+      const id = '1'
+
+      service.getOne(id).subscribe((data)=>{
+        expect(data).toEqual(mockData)
+        doneFn()
+      })
+
+      const req = httpController.expectOne(`${url}/products/${id}`)
+      req.flush(mockData)
+      expect(req.request.method).toEqual('GET')
+    })
+
+    it('Should return error 404', (doneFn) => {
+      const msgError = '404 message';
+      const mockError = {
+        status: HttpStatusCode.NotFound,
+        statusText: msgError
+      };
+      const id = '1'
+
+      service.getOne(id).subscribe({
+        error: (data) => {
+          expect(data).toEqual('El producto no existe')
+          doneFn()
+        }
+      })
+
+      const req = httpController.expectOne(`${url}/products/${id}`)
+      req.flush(msgError, mockError)
+      expect(req.request.method).toBe('GET')
+    })
+
+    it('Should return error 409', (doneFn) => {
+      const msgError = '409 error'
+      const mockError = {
+        status: HttpStatusCode.Conflict,
+        statusText: msgError
+      }
+      const id = 'id'
+
+      service.getOne(id).subscribe({
+        error: (error) => {
+          expect(error).toEqual('Algo esta fallando en el server')
+          doneFn()
+        }
+      })
+
+      const req = httpController.expectOne(`${url}/products/${id}`)
+      req.flush(msgError, mockError)
+      expect(req.request.method).toBe('GET')
+    })
+
+    it('Should return error 401', (doneFn) => {
+      const msgError = '401 error'
+      const mockError = {
+        status: HttpStatusCode.Unauthorized,
+        statusText: msgError
+      }
+      const id = '1'
+
+      service.getOne(id).subscribe({
+        error: (error) => {
+          expect(error).toBe('No estas permitido')
+          doneFn()
+        }
+      })
+
+      const req = httpController.expectOne(`${url}/products/${id}`)
+      req.flush(msgError, mockError)
+      expect(req.request.method).toBe('GET')
+    })
+
+    it('Should return default error msg', (doneFn) => {
+      const errorMsg = 'error 500'
+      const mockError = {
+        status: HttpStatusCode.InternalServerError,
+        statusText: errorMsg
+      }
+      const id = "1"
+
+      service.getOne(id).subscribe({
+        error: (error) => {
+          expect(error).toEqual('Ups algo salio mal')
+          doneFn()
+        }
+      })
+
+      const req = httpController.expectOne(`${url}/products/${id}`)
+      req.flush(errorMsg, mockError)
+      expect(req.request.method).toBe('GET')
     })
   })
 
