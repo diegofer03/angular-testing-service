@@ -15,6 +15,4 @@ export class TokenService {
     const token = localStorage.getItem('token');
     return token;
   }
-
-
 }

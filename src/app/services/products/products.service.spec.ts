@@ -4,10 +4,13 @@ import { ProductsService } from './products.service';
 import { CreateProductDTO, Product, UpdateProductDTO } from './../../models/app.models';
 import { environment } from 'src/environments/environment.development';
 import { generateManyProducts, generateOneProduct } from 'src/app/models/app.mocks';
-import { HttpStatusCode } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpStatusCode } from '@angular/common/http';
+import { TokenInterceptor } from 'src/app/interceptors/token.interceptor';
+import { TokenService } from '../token/token.service';
 
 fdescribe('ProductsService', () => {
   let service: ProductsService;
+  let tokenService : TokenService
   let httpController: HttpTestingController
   const url = `${environment.API_URL}/api/v1`
 
@@ -17,11 +20,16 @@ fdescribe('ProductsService', () => {
         HttpClientTestingModule
       ],
       providers: [
-        ProductsService
+        ProductsService,
+        TokenService,
+        { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
       ]
     });
     service = TestBed.inject(ProductsService);
+    tokenService = TestBed.inject(TokenService)
     httpController = TestBed.inject(HttpTestingController)
+
+    spyOn(tokenService, 'getToken').and.returnValue('123')
   });
 
   it('should be created', () => {
@@ -40,7 +48,7 @@ fdescribe('ProductsService', () => {
       //flush request with expected mocked data
       req.flush(mockData)
       //controller verify request
-
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
   })
 
@@ -53,6 +61,7 @@ fdescribe('ProductsService', () => {
       })
       const req = httpController.expectOne(`${url}/products`)
       req.flush(mockData)
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
     it('should get all products with taxes', (doneFn) => {
       const mockData: Product[] = [
@@ -75,6 +84,7 @@ fdescribe('ProductsService', () => {
       })
       const req = httpController.expectOne(`${url}/products`)
       req.flush(mockData)
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
     it('Should get products with offset and limit params', (doneFn) => {
       const mockData: Product[] = generateManyProducts(3);
@@ -91,6 +101,7 @@ fdescribe('ProductsService', () => {
       const params = req.request.params
       expect(params.get('limit')).toBe(limit+'')
       expect(params.get('offset')).toBe(`${offset}`)
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
   })
 
@@ -107,6 +118,7 @@ fdescribe('ProductsService', () => {
       const req = httpController.expectOne(`${url}/products/${id}`)
       req.flush(mockData)
       expect(req.request.method).toEqual('GET')
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
 
     it('Should return error 404', (doneFn) => {
@@ -127,6 +139,7 @@ fdescribe('ProductsService', () => {
       const req = httpController.expectOne(`${url}/products/${id}`)
       req.flush(msgError, mockError)
       expect(req.request.method).toBe('GET')
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
 
     it('Should return error 409', (doneFn) => {
@@ -147,6 +160,7 @@ fdescribe('ProductsService', () => {
       const req = httpController.expectOne(`${url}/products/${id}`)
       req.flush(msgError, mockError)
       expect(req.request.method).toBe('GET')
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
 
     it('Should return error 401', (doneFn) => {
@@ -167,6 +181,7 @@ fdescribe('ProductsService', () => {
       const req = httpController.expectOne(`${url}/products/${id}`)
       req.flush(msgError, mockError)
       expect(req.request.method).toBe('GET')
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
 
     it('Should return default error msg', (doneFn) => {
@@ -187,6 +202,7 @@ fdescribe('ProductsService', () => {
       const req = httpController.expectOne(`${url}/products/${id}`)
       req.flush(errorMsg, mockError)
       expect(req.request.method).toBe('GET')
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
   })
 
@@ -208,6 +224,7 @@ fdescribe('ProductsService', () => {
       req.flush(mockData)
       expect(req.request.method).toBe('POST')
       expect(req.request.body).toEqual(dto)
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
   })
 
@@ -227,6 +244,7 @@ fdescribe('ProductsService', () => {
       req.flush(mockData)
       expect(req.request.method).toBe('PUT')
       expect(req.request.body).toEqual(dto)
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
   })
 
@@ -241,6 +259,7 @@ fdescribe('ProductsService', () => {
       const req = httpController.expectOne(`${url}/products/${id}`)
       req.flush(mockData)
       expect(req.request.method).toEqual('DELETE')
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123')
     })
   })
 
