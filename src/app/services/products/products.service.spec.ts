@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ProductsService } from './products.service';
-import { Product } from './../../models/app.models';
+import { CreateProductDTO, Product } from './../../models/app.models';
 import { environment } from 'src/environments/environment.development';
 import { generateManyProducts, generateOneProduct } from 'src/app/models/app.mocks';
 
@@ -39,7 +39,7 @@ fdescribe('ProductsService', () => {
       //flush request with expected mocked data
       req.flush(mockData)
       //controller verify request
-      httpController.verify()
+
     })
   })
 
@@ -52,7 +52,6 @@ fdescribe('ProductsService', () => {
       })
       const req = httpController.expectOne(`${url}/products`)
       req.flush(mockData)
-      httpController.verify()
     })
     it('should get all products with taxes', (doneFn) => {
       const mockData: Product[] = [
@@ -75,7 +74,6 @@ fdescribe('ProductsService', () => {
       })
       const req = httpController.expectOne(`${url}/products`)
       req.flush(mockData)
-      httpController.verify()
     })
     it('Should get products with offset and limit params', (doneFn) => {
       const mockData: Product[] = generateManyProducts(3);
@@ -92,7 +90,31 @@ fdescribe('ProductsService', () => {
       const params = req.request.params
       expect(params.get('limit')).toBe(limit+'')
       expect(params.get('offset')).toBe(`${offset}`)
-      httpController.verify()
     })
+  })
+
+  describe('createProduct', () => {
+    it('Should create a product ', (doneFn) => {
+      const mockData = generateOneProduct()
+      const dto: CreateProductDTO = {
+        title: 'new Product',
+        price: 100,
+        images: ['img'],
+        description: 'bla bla bla',
+        categoryId: 12
+      }
+      service.create({...dto}).subscribe((data) => {
+        expect(data).toBe(mockData)
+        doneFn()
+      })
+      const req = httpController.expectOne(`${url}/products`)
+      req.flush(mockData)
+      expect(req.request.method).toBe('POST')
+      expect(req.request.body).toBe(dto)
+    })
+  })
+
+  afterEach(() => {
+    httpController.verify()
   })
 });
