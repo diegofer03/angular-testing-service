@@ -129,7 +129,21 @@ fdescribe('ProductsService', () => {
       const req = httpController.expectOne(`${url}/products/${id}`)
       req.flush(mockData)
       expect(req.request.method).toBe('PUT')
-      expect(req.request.body).toBe(dto)
+      expect(req.request.body).toEqual(dto)
+    })
+  })
+
+  describe('delete product', () => {
+    it('Should delete product', (doneFn) => {
+      const mockData = true
+      const id = '1'
+      service.delete(id).subscribe((data)=>{
+        expect(data).toEqual(mockData)
+        doneFn()
+      })
+      const req = httpController.expectOne(`${url}/products/${id}`)
+      req.flush(mockData)
+      expect(req.request.method).toEqual('DELETE')
     })
   })
 
