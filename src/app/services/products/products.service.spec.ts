@@ -8,7 +8,7 @@ import { HTTP_INTERCEPTORS, HttpStatusCode } from '@angular/common/http';
 import { TokenInterceptor } from 'src/app/interceptors/token.interceptor';
 import { TokenService } from '../token/token.service';
 
-fdescribe('ProductsService', () => {
+describe('ProductsService', () => {
   let service: ProductsService;
   let tokenService : TokenService
   let httpController: HttpTestingController

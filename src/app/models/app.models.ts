@@ -13,6 +13,18 @@ export interface Product {
   taxes?: number;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface CreateUserDTO extends Omit<User, 'id'> {}
+
+export interface Auth {
+  access_token: string;
+}
 
 export interface CreateProductDTO extends Omit<Product, 'id' | 'category'> {
   categoryId: number;
