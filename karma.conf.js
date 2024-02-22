@@ -43,6 +43,12 @@ module.exports = function (config) {
     },
     reporters: ['mocha', 'kjhtml'],
     browsers: ['Chrome'],
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    },
     restartOnFileChange: true
   });
 };
